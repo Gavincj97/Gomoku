@@ -66,6 +66,8 @@ class Gomoku {
                 this._board[i][j] = 0;
             }
         }
+        this._ai = [];
+        this._human = [];
         this._result = 0;
     }
 
@@ -110,24 +112,29 @@ class Gomoku {
         //xAI = yAI = -1;
         return this._ai[this._ai.length - 1];
     }
-    
+
     retry() {
-        if(this._result === 1)
+        if (this._result === 1)
             return false;
+        if(this._ai.length === 0||this._human.length === 0)
+            return false;
+
         let _h = this._human.pop();
         let _a = this._ai.pop();
-        if (_h === undefined || _a === undefined)
-            return false;
         this._board[_h[0]][_h[1]] = 0;
         this._board[_a[0]][_a[1]] = 0;
         this._result = 0;
+        this.value = 0;
+        this._step = this._ai.length;
+        console.log("this._ai"+this._ai);
+        console.log("this._human"+this._human);
         return true;
     }
 
     lastai() {
         if (this._ai.length === 0)
             return [-1, -1]
-        else 
+        else
             return this._ai[this._ai.length - 1];
     }
 
@@ -143,8 +150,11 @@ class Gomoku {
         }
         let moveList = this._findNextPoint(); //搜索可执行操作
 
+        console.log("this.value=" + this.value);
+        console.log("this._step=" + this._step);
+
         if (this._step > 0) {
-            if (this._value < 0) //人优势，防守
+            if (this._value <= 0) //人优势，防守
                 this._reOrder(state, moveList, this._human[this._human.length - 1]); //可执行操作排序 TODO
             else //进攻
                 this._reOrder(state, moveList, this._ai[this._ai.length - 1]);
@@ -340,7 +350,8 @@ class Gomoku {
         // console.log("curPoint=" + cur);
 
         let tempList = moveList.slice(totalPriNum);
-        // console.log("tempList1=" + tempList);
+        console.log("tempList1=" + tempList);
+        console.log("curPoint=" + cur);
         function sortDistence(pt1, pt2) { //其余点按距离从小到大排序
             let ds1 = [pt1[0] - cur[0], pt1[1] - cur[1]];
             let ds2 = [pt2[0] - cur[0], pt2[1] - cur[1]];
